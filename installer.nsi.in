@@ -1,0 +1,100 @@
+;--------------------------------
+;Include Modern UI
+
+  !include "MUI2.nsh"
+
+;--------------------------------
+;General
+
+  !define APPNAME "Tcl 8.6 for Windows (Unofficial)"
+  !define VERSION "8.6.6-0.1.0"
+  
+  ;Name and file
+  Name "${APPNAME}"
+  OutFile "tcl86-installer-${VERSION}.exe"
+  SetCompressor /SOLID lzma
+
+  ;Default installation folder
+  InstallDir "$LOCALAPPDATA\Tcl86"
+  
+  ;Get installation folder from registry if available
+  InstallDirRegKey HKCU "Software\${APPNAME}" ""
+
+  ;Request application privileges for Windows Vista
+  RequestExecutionLevel user
+
+;--------------------------------
+;Interface Settings
+
+  !define MUI_ABORTWARNING
+
+;--------------------------------
+;Pages
+
+  !insertmacro MUI_PAGE_COMPONENTS
+  !insertmacro MUI_PAGE_DIRECTORY
+  !insertmacro MUI_PAGE_INSTFILES
+  
+  !insertmacro MUI_UNPAGE_CONFIRM
+  !insertmacro MUI_UNPAGE_INSTFILES
+  
+;--------------------------------
+;Languages
+ 
+  !insertmacro MUI_LANGUAGE "English"
+
+;--------------------------------
+;Installer Sections
+
+Section "Tcl 8.6 for Windows"
+
+  SetOutPath "$INSTDIR"
+  
+  ;Begin file list
+FILE_LIST
+  ;End file list
+  
+  ;Store installation folder
+  WriteRegStr HKCU "Software\${APPNAME}" "" $INSTDIR
+  
+  ;Create uninstaller
+  WriteUninstaller "$INSTDIR\Uninstall.exe"
+
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" \
+              "DisplayName" "${APPNAME}"
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" \
+              "DisplayVersion" "${VERSION}"
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" \
+              "UninstallString" "$INSTDIR\Uninstall.exe"
+SectionEnd
+
+Section "Start menu shortcuts"
+  createDirectory "$SMPROGRAMS\${APPNAME}"
+  createShortCut "$SMPROGRAMS\${APPNAME}\Tcl command shell.lnk" "$INSTDIR\bin\tclsh.exe" "" "" "" "" "" "Console for interactive execution of commands in the Tcl language"
+  createShortCut "$SMPROGRAMS\${APPNAME}\Tk graphical console.lnk" "$INSTDIR\bin\wish.exe" "" "" "" "" "" "Graphical console for interactive execution of commands using the Tcl/Tk toolkit"
+  createShortCut "$SMPROGRAMS\${APPNAME}\Tkcon enhanced console.lnk" "$INSTDIR\bin\wish.exe" "$\"$INSTDIR\bin\tkcon.tcl$\"" "" "" "" "" "Graphical enhanced console for interactive execution of commands using the Tcl/Tk toolkit"
+  createShortCut "$SMPROGRAMS\${APPNAME}\Uninstall.lnk" "$INSTDIR\Uninstall.exe" "" "" "" "" "" "Uninstall ${APPNAME}"
+SectionEnd
+
+;--------------------------------
+;Uninstaller Section
+
+Section "Uninstall"
+
+  ;Begin file delete list
+DELETE_LIST
+  ;End file delete list
+
+  Delete "$SMPROGRAMS\${APPNAME}\Tcl command shell.lnk"
+  Delete "$SMPROGRAMS\${APPNAME}\Tk graphical console.lnk"
+  Delete "$SMPROGRAMS\${APPNAME}\Tkcon enhanced console.lnk"
+  Delete "$SMPROGRAMS\${APPNAME}\Uninstall.lnk"
+  RMDir "$SMPROGRAMS\${APPNAME}"
+
+  Delete "$INSTDIR\Uninstall.exe"
+
+  RMDir "$INSTDIR"
+
+  DeleteRegKey /ifempty HKCU "Software\${APPNAME}"
+  DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
+SectionEnd

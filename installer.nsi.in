@@ -11,7 +11,7 @@
 ;General
 
   !define APPNAME "Tcl 8.6 for Windows (Unofficial)"
-  !define VERSION "8.6.6-0.2.0"
+  !define VERSION "8.6.6-0.3.0"
   
   ;Name and file
   Name "${APPNAME}"
@@ -55,9 +55,9 @@ Section "Tcl 8.6 for Windows"
 
   SetOutPath "$INSTDIR"
   
-  ;Begin file list
-FILE_LIST
-  ;End file list
+  ;Begin create list
+CREATE_LIST
+  ;End create list
   
   ;Store installation folder
   WriteRegStr SHCTX "Software\${APPNAME}" "" $INSTDIR
@@ -86,9 +86,9 @@ SectionEnd
 
 Section "Uninstall"
 
-  ;Begin file delete list
+  ;Begin delete list
 DELETE_LIST
-  ;End file delete list
+  ;End delete list
 
   Delete "$SMPROGRAMS\${APPNAME}\Tcl command shell.lnk"
   Delete "$SMPROGRAMS\${APPNAME}\Tk graphical console.lnk"

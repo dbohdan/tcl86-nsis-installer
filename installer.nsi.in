@@ -1,24 +1,27 @@
 ;--------------------------------
-;Include Modern UI
+;Includes
+  SetCompressor /SOLID lzma
 
-  !include "MUI2.nsh"
+  !define MULTIUSER_EXECUTIONLEVEL Highest
+  !define MULTIUSER_MUI
+  !include MultiUser.nsh
+  !include MUI2.nsh
 
 ;--------------------------------
 ;General
 
   !define APPNAME "Tcl 8.6 for Windows (Unofficial)"
-  !define VERSION "8.6.6-0.1.0"
+  !define VERSION "8.6.6-0.2.0"
   
   ;Name and file
   Name "${APPNAME}"
   OutFile "tcl86-installer-${VERSION}.exe"
-  SetCompressor /SOLID lzma
 
   ;Default installation folder
-  InstallDir "$LOCALAPPDATA\Tcl86"
-  
+  ;InstallDir
+
   ;Get installation folder from registry if available
-  InstallDirRegKey HKCU "Software\${APPNAME}" ""
+  ;InstallDirRegKey SHCTX "Software\${APPNAME}" ""
 
   ;Request application privileges for Windows Vista
   RequestExecutionLevel user
@@ -31,7 +34,9 @@
 ;--------------------------------
 ;Pages
 
+  !insertmacro MULTIUSER_PAGE_INSTALLMODE
   !insertmacro MUI_PAGE_COMPONENTS
+  !define MUI_PAGE_CUSTOMFUNCTION_PRE DirectoryPre
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
   
@@ -55,16 +60,16 @@ FILE_LIST
   ;End file list
   
   ;Store installation folder
-  WriteRegStr HKCU "Software\${APPNAME}" "" $INSTDIR
+  WriteRegStr SHCTX "Software\${APPNAME}" "" $INSTDIR
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" \
+  WriteRegStr SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" \
               "DisplayName" "${APPNAME}"
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" \
+  WriteRegStr SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" \
               "DisplayVersion" "${VERSION}"
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" \
+  WriteRegStr SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" \
               "UninstallString" "$INSTDIR\Uninstall.exe"
 SectionEnd
 
@@ -95,6 +100,22 @@ DELETE_LIST
 
   RMDir "$INSTDIR"
 
-  DeleteRegKey /ifempty HKCU "Software\${APPNAME}"
-  DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
+  DeleteRegKey /ifempty SHCTX "Software\${APPNAME}"
+  DeleteRegKey SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
 SectionEnd
+
+Function .onInit
+  !insertmacro MULTIUSER_INIT
+FunctionEnd
+
+Function un.onInit
+  !insertmacro MULTIUSER_UNINIT
+FunctionEnd
+
+Function DirectoryPre
+  ${If} $MultiUser.InstallMode == "AllUsers"
+    StrCpy $INSTDIR "C:\Tcl86"
+  ${Else}
+    StrCpy $INSTDIR "$LOCALAPPDATA\Tcl86"
+  ${EndIf}
+FunctionEnd

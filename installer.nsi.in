@@ -12,7 +12,7 @@
 
   !define APPNAME "Tcl 8.6 for Windows (Unofficial)"
   !define VERSION "8.6.6-0.3.0"
-  
+
   ;Name and file
   Name "${APPNAME}"
   OutFile "tcl86-installer-${VERSION}.exe"
@@ -39,13 +39,13 @@
   !define MUI_PAGE_CUSTOMFUNCTION_PRE DirectoryPre
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
-  
+
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
-  
+
 ;--------------------------------
 ;Languages
- 
+
   !insertmacro MUI_LANGUAGE "English"
 
 ;--------------------------------
@@ -54,14 +54,14 @@
 Section "Tcl 8.6 for Windows"
 
   SetOutPath "$INSTDIR"
-  
+
   ;Begin create list
 CREATE_LIST
   ;End create list
-  
+
   ;Store installation folder
   WriteRegStr SHCTX "Software\${APPNAME}" "" $INSTDIR
-  
+
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 

@@ -28,8 +28,8 @@ $file_commands = `
 $delete_commands = $files | % { "  Delete ""$_""" } | Join-Lines
 $rmdir_commands = $dirs | Reverse | % { "  RMDir ""$_""" } | Join-Lines
 
-(Get-Content installer.nsi.in).
-    Replace('CREATE_LIST', $dir_commands + "`n" + $file_commands).
+(Get-Content installer.nsi.in).`
+    Replace('CREATE_LIST', $dir_commands + "`n" + $file_commands).`
     Replace('DELETE_LIST', $delete_commands + "`n" + $rmdir_commands) `
 | Set-Content installer.nsi
 
